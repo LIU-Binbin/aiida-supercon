@@ -164,12 +164,13 @@ class ChkData(SinglefileData):
         return self.base.attributes.get('n_dis')
     
     def get_Udis(self):
-        
+        """Return the disentanglement matrices sorted by band flag."""
+
         n_kpts = self.n_kpts
         n_wann = self.n_wann
 
         # 类型 T = np.complex128（由 Uml[0] 推断）
-        dtype = chk.Uml[0].dtype
+        dtype = self.Uml[0].dtype
 
         if not self.have_disentangled:
             # 每个 k 点下单位矩阵（形状 n_wann x n_wann）
@@ -183,13 +184,14 @@ class ChkData(SinglefileData):
 
         return Udis_sorted
 
-    def get_U(chk):
-        if not chk.have_disentangled:
-            # Return deepcopy for safety, so that chk.Uml is not modified
+    def get_U(self):
+        """Return the overall unitary transformation matrices."""
+        if not self.have_disentangled:
+            # Return deepcopy for safety, so that self.Uml is not modified
             return self.Uml.copy()
 
         Udis = self.get_Udis()  # 这是一个 list of np.ndarray，长度为 n_kpts
-        Uml = self.Uml # list of np.ndarray
+        Uml = self.Uml  # list of np.ndarray
 
         U = [d @ m for d, m in zip(Udis, Uml)]
         return U
